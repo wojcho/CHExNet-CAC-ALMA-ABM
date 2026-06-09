@@ -90,3 +90,73 @@ It can be done using Ollama and a relatively small model.
 Another approach could be generating embeddings of titles, and clustering these embeddings, ang taking back titles for topics.
 
 Comparison between historical and generated data would be done by comparing topic distribution for each time period.
+
+# Elaboration of Idea
+
+## General Idea
+First, obtain topics through semantic soft clustering on titles.
+Each publication would have a vector, where levels of beloning to clusters would be stored, vectors would be of same length for each publication with values between 0 and 1.
+Then, using that data, construct ABM models, which attempt to recreate properties of historical data.
+Through [ablation tests](https://en.wikipedia.org/wiki/Ablation_(artificial_intelligence)), compare different versions of a model.
+A model would have part responsible for causing agents to be created, be removed, and selected to coauthor publications in specific topics.
+Frequency of these events would be adjusted, similarly simulation step.
+What would differ for these models would be:
+- function deciding which agents are selected to publish new papers at a specific step,
+- function which agents use to decide in which topic to coauthor a new publication after being selected for publishing at a specific step.
+It would be later checked, if these simple rules allow to recreate global patterns.
+Performance would be checked by comparing with properties of historical data, such as topic clustering in network of publications and contacts similar to CHExNet.
+
+## Decision Functions on Topics - How Models Would Differ
+In ablation tests, components of models would be added or removed, and performance checked.
+Decision functions would return new topic vector, and take as parameters environmental variables.
+Heuristics/components which would be tested in various combinations, as only influence, or combined with others:
+- Uniform random vector of topic probabilities
+- Reliant on probability of choosing topics at certain year
+- Reliant on past topics of publishing researchers
+- Reliant on topics of past coauthors of publishing researchers
+
+Signature of these functions could be treated as `def decide_topic(current_date: date, publishing_researchers: list[Researcher]) -> np.array`, but not all functions would use all arguments.
+Second function on the above list would be effectively curried with constant value or function obtained from historical data: `topic_probabilities_at_dates`.
+
+## Decision Functions on Group selection
+- Random subset selection
+- Constant probability from historical data
+- Reliant on past coauthorship
+`def decide_collaborate(active_researchers: list[Researcher], publications: list[Publications]) -> list[list[Researcher]]`
+
+## Data Structures: Agent - Researcher, Publication - at Specific Time Step
+Researcher has:
+- ID
+- date of becoming a researcher
+- vector of past publication IDs
+
+Publication has:
+- ID
+- list of researcher IDs
+- topic vector, always of same length, with values between 0 and 1
+
+Alternatively, instead of IDs, pointers (object references) could be used.
+
+## Simulation for Each Step
+- Remove researchers from among existing ones, based on probability of that happening in real historical data between during step interval `def new_researcher_probability(step_duration) -> float`
+- Add new researchers, based on probability of that happening in real historical data during step interval depending on age `def quit_researcher_probability(step_duration, age) -> float`
+- Choose groups of researchers which would publish new publications `def decide_collaborate(active_researchers: list[Researcher], publications: list[Publications]) -> list[list[Researcher]]`
+- Decide what would be topics of new publications using a decision function `def decide_topic(current_date: date, publishing_researchers: list[Researcher]) -> np.array`
+
+Simulation would generate results stored in similar way as historical data is stored - Pandas dataframes, for comparison with historical data.
+
+## Comparison of Models and Historical Data
+- Topic Distribution Through Time - Does the model reproduce which topics were popular at a given time?
+  - calculate topic distribution per decade
+  - compare with historical distribution
+- Scholar Topic Specialization - Are scholars similarly specialized?
+  - amount of topics they published in
+  - entropy of their topic distribution
+- Coauthor Topic Similarity - If adding coauthor influence improves this metric, that is evidence that the mechanism matters.
+  - for every coauthor pair compute similarity of their cumulative topic vectors
+  - compare mean similarity, similarity distribution
+- Topic Assortativity of the Collaboration Network - Do scholars collaborate mostly with people in similar domains?
+  - collaboration graph aggregated
+  - nodes are scholars, edges are coauthorships
+  - each scholar has vector of average publication topic
+  - measure assortativity, were collaborations with authors who had focused on similar topics
