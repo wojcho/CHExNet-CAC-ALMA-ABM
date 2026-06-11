@@ -138,8 +138,8 @@ Publication has:
 Alternatively, instead of IDs, pointers (object references) could be used.
 
 ## Simulation for Each Step
-- Add new researchers, based on probability of that happening in real historical data during step interval depending on age `how_many_new_researchers(step_duration: duration, date_now: date) -> int`
 - Remove researchers from among existing ones, based on probability of that happening in real historical data between during step interval `def researcher_quit_probability(step_duration, first_publication_date: date, date_now: date) -> float`
+- Add new researchers, based on probability of that happening in real historical data during step interval depending on age `how_many_new_researchers(step_duration: duration, date_now: date) -> int`
 - Choose groups of researchers which would publish new publications `def decide_collaborate(active_researchers: list[Researcher], publications: list[Publications]) -> list[list[Researcher]]`
 - Decide what would be topics of new publications using a decision function `def decide_topic(current_date: date, publishing_researchers: list[Researcher]) -> np.array`
 
