@@ -155,8 +155,8 @@ Simulation would generate results stored in similar way as historical data is st
 - Coauthor Topic Similarity - If adding coauthor influence improves this metric, that is evidence that the mechanism matters.
   - for every coauthor pair compute similarity of their cumulative topic vectors
   - compare mean similarity, similarity distribution
-- Topic Assortativity of the Collaboration Network - Do scholars collaborate mostly with people in similar domains?
+- Topic Assortativity of the Collaboration Network - Do scholars collaborate mostly with other scholars in similar domains?
   - collaboration graph aggregated
   - nodes are scholars, edges are coauthorships
   - each scholar has vector of average publication topic
-  - measure assortativity, were collaborations with authors who had focused on similar topics
+  - measure assortativity, effects of collaborations beyond only coauthors
