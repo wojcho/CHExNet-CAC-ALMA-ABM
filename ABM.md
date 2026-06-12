@@ -111,17 +111,20 @@ In ablation tests, components of models would be added or removed, and performan
 Decision functions would return new topic vector, and take as parameters environmental variables.
 Heuristics/components which would be tested in various combinations, as only influence, or combined with others:
 - Uniform random vector of topic probabilities
-- Reliant on probability of choosing topics at certain year
+- Uniform random vector with only one 1 and other values 0s
+- Reliant on probability of choosing topics at certain time step in historical data
 - Reliant on past topics of publishing researchers
 - Reliant on topics of past coauthors of publishing researchers
+- 3 of the above summed with various levels of influence over results
 
 Signature of these functions could be treated as `def decide_topic(current_date: date, publishing_researchers: list[Researcher]) -> np.array`, but not all functions would use all arguments.
 Second function on the above list would be effectively curried with constant value or function obtained from historical data: `topic_probabilities_at_dates`.
 
 ## Decision Functions on Group selection
-- Random subset selection
-- Constant probability from historical data
-- Reliant on past coauthorship
+- New publication rate (amount divided by researchers amount, because researchers amount can change significantly), Amount of authors, both as mean of historical data
+- Publication rate as drawn from Negative Binomial distribution with fitted parameters, Amount of authors as drawn from Poisson distribution with fitted parameter
+- As above, but also researcher choice within added amount is influenced by past researcher productivity
+- As above, but also past coauthorship indfuences new researcher choice, researchers are more likely to collaborate again with eachother
 `def decide_collaborate(active_researchers: list[Researcher], publications: list[Publications]) -> list[list[Researcher]]`
 
 ## Data Structures: Agent - Researcher, Publication - at Specific Time Step
